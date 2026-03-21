@@ -1,0 +1,59 @@
+.invoice-list-page {
+  padding: 16px;
+}
+
+.invoice-list-page h2 {
+  font-size: 22px;
+  margin: 0 0 16px;
+  color: #1a1a2e;
+}
+
+.empty-msg {
+  text-align: center;
+  color: #999;
+  padding: 40px;
+}
+
+.inv-list-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.inv-list-card:active {
+  background: #f7fafc;
+}
+
+.inv-list-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.inv-list-num {
+  font-weight: 700;
+  color: #1a56db;
+  font-size: 16px;
+}
+
+.inv-list-total {
+  font-weight: 700;
+  font-size: 18px;
+  color: #15803d;
+}
+
+.inv-list-mid {
+  font-size: 15px;
+  color: #333;
+  margin: 4px 0;
+}
+
+.inv-list-bot {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #999;
+}

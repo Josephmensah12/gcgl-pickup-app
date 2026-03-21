@@ -1,0 +1,110 @@
+.label-page {
+  padding: 16px;
+}
+
+.label-controls {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.label-controls h2 {
+  font-size: 22px;
+  margin: 0 0 8px;
+  color: #1a1a2e;
+}
+
+.label-info {
+  color: #666;
+  font-size: 14px;
+  margin: 0 0 16px;
+}
+
+.print-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  background: #1a56db;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 48px;
+}
+
+.labels-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.label {
+  border: 2px dashed #999;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  background: #fff;
+  page-break-inside: avoid;
+}
+
+.label-invoice {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.label-barcode {
+  margin: 8px 0;
+}
+
+.label-barcode svg {
+  max-width: 100%;
+}
+
+.label-details {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  font-size: 14px;
+  margin: 8px 0;
+}
+
+.label-dims {
+  font-weight: 600;
+}
+
+.label-desc {
+  color: #666;
+}
+
+.label-count {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .app-header {
+    display: none !important;
+  }
+
+  .label {
+    border: 2px solid #000;
+    margin-bottom: 16px;
+    page-break-inside: avoid;
+  }
+
+  .label-page {
+    padding: 0;
+  }
+}
