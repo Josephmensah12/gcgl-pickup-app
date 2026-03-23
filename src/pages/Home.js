@@ -1,18 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getInvoices, getShipments } from '../utils/storage';
+import { getInvoices, getShipments } from '../utils/api';
 import { formatInvoiceNumber } from '../utils/helpers';
 import './Home.css';
 
 export default function Home() {
   const navigate = useNavigate();
-  const invoices = getInvoices();
-  const shipments = getShipments().filter((s) => s.status === 'collecting');
+  const [invoices, setInvoices] = useState([]);
+  const [shipments, setShipments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([getInvoices(), getShipments()])
+      .then(([inv, ship]) => {
+        setInvoices(inv);
+        setShipments(ship.filter((s) => s.status === 'collecting'));
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
   const todayStr = new Date().toLocaleDateString();
   const todayInvoices = invoices.filter(
     (inv) => new Date(inv.createdAt).toLocaleDateString() === todayStr
   );
   const unpaid = invoices.filter((i) => i.paymentStatus === 'unpaid').length;
+
+  if (loading) return <div className="home-page"><p>Loading...</p></div>;
 
   return (
     <div className="home-page">

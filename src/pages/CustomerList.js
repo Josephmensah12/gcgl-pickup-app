@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { searchCustomers } from '../utils/storage';
+import { searchCustomers } from '../utils/api';
 import './CustomerList.css';
 
 export default function CustomerList() {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [customers, setCustomers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setCustomers(searchCustomers(query));
+    setLoading(true);
+    searchCustomers(query)
+      .then(setCustomers)
+      .finally(() => setLoading(false));
   }, [query]);
 
   return (
@@ -27,7 +31,8 @@ export default function CustomerList() {
         + Add New Customer
       </button>
       <div className="customer-results">
-        {customers.length === 0 && (
+        {loading && <p className="no-results">Loading...</p>}
+        {!loading && customers.length === 0 && (
           <p className="no-results">{query ? 'No customers found.' : 'No customers yet. Add one to get started.'}</p>
         )}
         {customers.map((c) => (

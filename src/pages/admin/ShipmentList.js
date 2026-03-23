@@ -1,17 +1,27 @@
-import React, { useState } from 'react';
-import { getShipments, saveShipment, getCompanySettings, getInvoices } from '../../utils/storage';
+import React, { useState, useEffect } from 'react';
+import { getShipments, saveShipment, getCompanySettings, getInvoices } from '../../utils/api';
 import { generateId, generateShipmentName } from '../../utils/helpers';
 import { formatPrice } from '../../utils/pricing';
 import './Admin.css';
 
 export default function ShipmentList() {
-  const [shipments, setShipments] = useState(getShipments());
-  const settings = getCompanySettings();
-  const invoices = getInvoices();
+  const [shipments, setShipments] = useState([]);
+  const [settings, setSettings] = useState(null);
+  const [invoices, setInvoices] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const refresh = () => setShipments(getShipments());
+  const loadData = async () => {
+    const [ship, s, inv] = await Promise.all([getShipments(), getCompanySettings(), getInvoices()]);
+    setShipments(ship);
+    setSettings(s);
+    setInvoices(inv);
+  };
 
-  const createShipment = () => {
+  useEffect(() => {
+    loadData().finally(() => setLoading(false));
+  }, []);
+
+  const createShipment = async () => {
     const shipment = {
       id: generateId(),
       name: generateShipmentName(),
@@ -24,13 +34,13 @@ export default function ShipmentList() {
       createdAt: new Date().toISOString(),
       shippedAt: null,
     };
-    saveShipment(shipment);
-    refresh();
+    await saveShipment(shipment);
+    await loadData();
   };
 
-  const updateStatus = (shipment, status) => {
-    saveShipment({ ...shipment, status, shippedAt: status === 'shipped' ? new Date().toISOString() : null });
-    refresh();
+  const updateStatus = async (shipment, status) => {
+    await saveShipment({ ...shipment, status, shippedAt: status === 'shipped' ? new Date().toISOString() : null });
+    await loadData();
   };
 
   const getCapacity = (shipment) => {
@@ -45,6 +55,8 @@ export default function ShipmentList() {
     }
     return { pct: 0, label: 'N/A', value: 0 };
   };
+
+  if (loading || !settings) return <div className="admin-page"><p>Loading...</p></div>;
 
   return (
     <div className="admin-page">

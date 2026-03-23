@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
-import { getCompanySettings, saveCompanySettings } from '../../utils/storage';
+import React, { useState, useEffect } from 'react';
+import { getCompanySettings, saveCompanySettings } from '../../utils/api';
 import './Admin.css';
 
 export default function CompanySettings() {
-  const [settings, setSettings] = useState(getCompanySettings());
+  const [settings, setSettings] = useState(null);
   const [saved, setSaved] = useState(false);
-  const info = settings.companyInfo;
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getCompanySettings()
+      .then(setSettings)
+      .finally(() => setLoading(false));
+  }, []);
 
   const update = (field, value) => {
     setSettings((p) => ({ ...p, companyInfo: { ...p.companyInfo, [field]: value } }));
@@ -17,10 +23,14 @@ export default function CompanySettings() {
     setSaved(false);
   };
 
-  const handleSave = () => {
-    saveCompanySettings(settings);
+  const handleSave = async () => {
+    await saveCompanySettings(settings);
     setSaved(true);
   };
+
+  if (loading || !settings) return <div className="admin-page"><p>Loading...</p></div>;
+
+  const info = settings.companyInfo;
 
   return (
     <div className="admin-page">

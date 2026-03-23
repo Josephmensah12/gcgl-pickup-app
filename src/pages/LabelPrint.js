@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Barcode from 'react-barcode';
-import { getInvoice } from '../utils/storage';
+import { getInvoice } from '../utils/api';
 import { formatItemCount, formatInvoiceNumber } from '../utils/helpers';
 import './LabelPrint.css';
 
 export default function LabelPrint() {
   const { id } = useParams();
   const [invoice, setInvoice] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => { setInvoice(getInvoice(id)); }, [id]);
+  useEffect(() => {
+    getInvoice(id)
+      .then(setInvoice)
+      .finally(() => setLoading(false));
+  }, [id]);
 
+  if (loading) return <div className="label-page"><p>Loading...</p></div>;
   if (!invoice) return <div className="label-page"><p>Invoice not found.</p></div>;
 
   const displayNum = formatInvoiceNumber(invoice.invoiceNumber, invoice.originalItemCount, invoice.addedItemCount);

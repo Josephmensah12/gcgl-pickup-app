@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { saveCustomer, getCustomers } from '../utils/storage';
+import { saveCustomer, getCustomers } from '../utils/api';
 import { generateId } from '../utils/helpers';
 import './CustomerForm.css';
 
@@ -8,20 +8,21 @@ export default function CustomerForm() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ fullName: '', email: '', address: '', phone: '' });
   const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: null }));
   };
 
-  const validate = () => {
+  const validate = async () => {
     const errs = {};
     if (!form.fullName.trim()) errs.fullName = 'Full name is required';
     if (!form.email.trim()) errs.email = 'Email is required';
     else if (!/\S+@\S+\.\S+/.test(form.email)) errs.email = 'Invalid email';
     if (!form.address.trim()) errs.address = 'Address is required';
     if (!form.phone.trim()) errs.phone = 'Phone number is required';
-    const existing = getCustomers();
+    const existing = await getCustomers();
     if (existing.some((c) => c.email.toLowerCase() === form.email.toLowerCase().trim())) {
       errs.email = 'Customer with this email already exists';
     }
@@ -29,20 +30,26 @@ export default function CustomerForm() {
     return Object.keys(errs).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
-    const customer = {
-      id: generateId(),
-      fullName: form.fullName.trim(),
-      email: form.email.trim().toLowerCase(),
-      address: form.address.trim(),
-      phone: form.phone.trim(),
-      recipients: [],
-      createdAt: new Date().toISOString(),
-    };
-    saveCustomer(customer);
-    navigate(`/customer/${customer.id}/recipients`, { replace: true });
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      if (!(await validate())) return;
+      const customer = {
+        id: generateId(),
+        fullName: form.fullName.trim(),
+        email: form.email.trim().toLowerCase(),
+        address: form.address.trim(),
+        phone: form.phone.trim(),
+        recipients: [],
+        createdAt: new Date().toISOString(),
+      };
+      await saveCustomer(customer);
+      navigate(`/customer/${customer.id}/recipients`, { replace: true });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -69,7 +76,9 @@ export default function CustomerForm() {
           <input type="tel" value={form.phone} onChange={(e) => handleChange('phone', e.target.value)} placeholder="(555) 123-4567" />
           {errors.phone && <span className="field-error">{errors.phone}</span>}
         </div>
-        <button type="submit" className="submit-btn">Save & Add Recipient</button>
+        <button type="submit" className="submit-btn" disabled={submitting}>
+          {submitting ? 'Saving...' : 'Save & Add Recipient'}
+        </button>
       </form>
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getInvoices } from '../utils/storage';
+import { getInvoices } from '../utils/api';
 import { formatPrice } from '../utils/pricing';
 import { formatDate, formatInvoiceNumber } from '../utils/helpers';
 import './InvoiceList.css';
@@ -9,13 +9,17 @@ export default function InvoiceList() {
   const navigate = useNavigate();
   const [invoices, setInvoices] = useState([]);
   const [filter, setFilter] = useState('all');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const all = getInvoices().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    setInvoices(all);
+    getInvoices()
+      .then((all) => setInvoices(all.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))))
+      .finally(() => setLoading(false));
   }, []);
 
   const filtered = filter === 'all' ? invoices : invoices.filter((i) => i.paymentStatus === filter);
+
+  if (loading) return <div className="invoice-list-page"><p>Loading...</p></div>;
 
   return (
     <div className="invoice-list-page">

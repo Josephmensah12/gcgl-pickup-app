@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getInvoice, getCompanySettings } from '../utils/storage';
+import { getInvoice, getCompanySettings } from '../utils/api';
 import { formatPrice } from '../utils/pricing';
 import { formatDate, formatItemCount, formatInvoiceNumber } from '../utils/helpers';
 import './InvoiceDisplay.css';
@@ -9,15 +9,22 @@ export default function InvoiceDisplay() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [invoice, setInvoice] = useState(null);
+  const [settings, setSettings] = useState(null);
   const [showEmail, setShowEmail] = useState(false);
   const [emailMsg, setEmailMsg] = useState('');
-  const settings = getCompanySettings();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setInvoice(getInvoice(id));
+    Promise.all([getInvoice(id), getCompanySettings()])
+      .then(([inv, s]) => {
+        setInvoice(inv);
+        setSettings(s);
+      })
+      .finally(() => setLoading(false));
   }, [id]);
 
-  if (!invoice) return <div className="invoice-page"><p>Invoice not found.</p></div>;
+  if (loading) return <div className="invoice-page"><p>Loading...</p></div>;
+  if (!invoice || !settings) return <div className="invoice-page"><p>Invoice not found.</p></div>;
 
   const displayNum = formatInvoiceNumber(invoice.invoiceNumber, invoice.originalItemCount, invoice.addedItemCount);
   const itemCountDisplay = formatItemCount(invoice.originalItemCount, invoice.addedItemCount);

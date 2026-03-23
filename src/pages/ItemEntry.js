@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { calculateCustomPrice, applyDiscount, formatPrice, calculateInvoiceTotals } from '../utils/pricing';
 import { generateId, formatInvoiceNumber } from '../utils/helpers';
-import { getCustomer, getRecipient, getInvoice, saveInvoice, getNextInvoiceNumber, getCatalogItems, getCatalogCategories, getShipments } from '../utils/storage';
+import { getCustomer, getRecipient, getInvoice, saveInvoice, getNextInvoiceNumber, getCatalogItems, getCatalogCategories, getShipments } from '../utils/api';
 import PhotoCapture from '../components/PhotoCapture';
 import './ItemEntry.css';
 
@@ -16,13 +16,14 @@ export default function ItemEntry() {
   const [lineItems, setLineItems] = useState([]);
   const [itemType, setItemType] = useState('custom'); // 'custom' | 'fixed'
   const [selectedShipment, setSelectedShipment] = useState('');
-  const shipments = getShipments().filter((s) => s.status === 'collecting');
+  const [shipments, setShipments] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Custom item form
   const [customForm, setCustomForm] = useState({ length: '', width: '', height: '', quantity: '1', description: '' });
   // Catalog
-  const catalogItems = getCatalogItems().filter((i) => i.active);
-  const categories = getCatalogCategories();
+  const [catalogItems, setCatalogItems] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [catFilter, setCatFilter] = useState('');
   const [catSearch, setCatSearch] = useState('');
   // Discount
@@ -31,17 +32,41 @@ export default function ItemEntry() {
   const [photos, setPhotos] = useState([]);
 
   useEffect(() => {
-    if (invoiceId) {
-      const inv = getInvoice(invoiceId);
-      if (inv) {
-        setExistingInvoice(inv);
-        setCustomer(getCustomer(inv.customerId));
-        setRecipient(getRecipient(inv.customerId, inv.recipientId));
+    const loadData = async () => {
+      try {
+        const [catItems, cats, ships] = await Promise.all([
+          getCatalogItems(),
+          getCatalogCategories(),
+          getShipments(),
+        ]);
+        setCatalogItems(catItems.filter((i) => i.active));
+        setCategories(cats);
+        setShipments(ships.filter((s) => s.status === 'collecting'));
+
+        if (invoiceId) {
+          const inv = await getInvoice(invoiceId);
+          if (inv) {
+            setExistingInvoice(inv);
+            const [c, r] = await Promise.all([
+              getCustomer(inv.customerId),
+              getRecipient(inv.customerId, inv.recipientId),
+            ]);
+            setCustomer(c);
+            setRecipient(r);
+          }
+        } else if (customerId && recipientId) {
+          const [c, r] = await Promise.all([
+            getCustomer(customerId),
+            getRecipient(customerId, recipientId),
+          ]);
+          setCustomer(c);
+          setRecipient(r);
+        }
+      } finally {
+        setLoading(false);
       }
-    } else if (customerId && recipientId) {
-      setCustomer(getCustomer(customerId));
-      setRecipient(getRecipient(customerId, recipientId));
-    }
+    };
+    loadData();
   }, [customerId, recipientId, invoiceId]);
 
   // Pricing
@@ -89,7 +114,7 @@ export default function ItemEntry() {
     setLineItems((prev) => prev.filter((i) => i.id !== id));
   };
 
-  const generateInvoiceHandler = () => {
+  const generateInvoiceHandler = async () => {
     if (lineItems.length === 0) return;
     const totals = calculateInvoiceTotals(lineItems);
 
@@ -104,12 +129,13 @@ export default function ItemEntry() {
         originalItemCount: origCount, addedItemCount: (existingInvoice.addedItemCount || 0) + addedCount,
         lastEditedAt: new Date().toISOString(),
       };
-      saveInvoice(updated);
+      await saveInvoice(updated);
       navigate(`/invoice/${existingInvoice.id}`, { replace: true });
     } else {
       const totalCount = lineItems.reduce((s, li) => s + li.quantity, 0);
+      const invoiceNumber = await getNextInvoiceNumber();
       const invoice = {
-        id: generateId(), invoiceNumber: getNextInvoiceNumber(),
+        id: generateId(), invoiceNumber,
         customerId: customer.id, customerName: customer.fullName,
         customerEmail: customer.email, customerAddress: customer.address, customerPhone: customer.phone,
         recipientId: recipient.id,
@@ -122,12 +148,12 @@ export default function ItemEntry() {
         shipmentId: selectedShipment || null,
         createdAt: new Date().toISOString(), status: 'completed',
       };
-      saveInvoice(invoice);
+      await saveInvoice(invoice);
       navigate(`/invoice/${invoice.id}`, { replace: true });
     }
   };
 
-  if (!customer || !recipient) {
+  if (loading || !customer || !recipient) {
     return <div className="item-entry-page"><p>Loading...</p></div>;
   }
 

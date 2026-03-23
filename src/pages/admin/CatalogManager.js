@@ -1,18 +1,27 @@
-import React, { useState, useRef } from 'react';
-import { getCatalogItems, saveCatalogItem, deleteCatalogItem, getCatalogCategories } from '../../utils/storage';
+import React, { useState, useEffect, useRef } from 'react';
+import { getCatalogItems, saveCatalogItem, deleteCatalogItem, getCatalogCategories } from '../../utils/api';
 import { generateId, compressImage } from '../../utils/helpers';
 import { formatPrice } from '../../utils/pricing';
 import './Admin.css';
 
 export default function CatalogManager() {
-  const [items, setItems] = useState(getCatalogItems());
+  const [items, setItems] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({ name: '', description: '', category: '', price: '', active: true, image: null });
-  const categories = getCatalogCategories();
+  const [loading, setLoading] = useState(true);
   const fileRef = useRef(null);
 
-  const refresh = () => setItems(getCatalogItems());
+  const refresh = async () => {
+    const [catItems, cats] = await Promise.all([getCatalogItems(), getCatalogCategories()]);
+    setItems(catItems);
+    setCategories(cats);
+  };
+
+  useEffect(() => {
+    refresh().finally(() => setLoading(false));
+  }, []);
 
   const openNew = () => {
     setForm({ name: '', description: '', category: '', price: '', active: true, image: null });
@@ -38,7 +47,7 @@ export default function CatalogManager() {
     e.target.value = '';
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.name.trim() || !form.price) return;
     const item = {
       id: editing || generateId(),
@@ -50,17 +59,19 @@ export default function CatalogManager() {
       image: form.image || null,
       createdAt: editing ? undefined : new Date().toISOString(),
     };
-    saveCatalogItem(item);
-    refresh();
+    await saveCatalogItem(item);
+    await refresh();
     setShowForm(false);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Delete this catalog item?')) {
-      deleteCatalogItem(id);
-      refresh();
+      await deleteCatalogItem(id);
+      await refresh();
     }
   };
+
+  if (loading) return <div className="admin-page"><p>Loading...</p></div>;
 
   return (
     <div className="admin-page">

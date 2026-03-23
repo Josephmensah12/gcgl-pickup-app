@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
-import { getCompanySettings, saveCompanySettings } from '../../utils/storage';
+import React, { useState, useEffect } from 'react';
+import { getCompanySettings, saveCompanySettings } from '../../utils/api';
 import './Admin.css';
 
 export default function ShipmentSettings() {
-  const [settings, setSettings] = useState(getCompanySettings());
+  const [settings, setSettings] = useState(null);
   const [saved, setSaved] = useState(false);
-  const ship = settings.shipmentSettings;
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getCompanySettings()
+      .then(setSettings)
+      .finally(() => setLoading(false));
+  }, []);
 
   const updateShip = (field, value) => {
     setSettings((p) => ({
@@ -26,10 +32,14 @@ export default function ShipmentSettings() {
     setSaved(false);
   };
 
-  const handleSave = () => {
-    saveCompanySettings(settings);
+  const handleSave = async () => {
+    await saveCompanySettings(settings);
     setSaved(true);
   };
+
+  if (loading || !settings) return <div className="admin-page"><p>Loading...</p></div>;
+
+  const ship = settings.shipmentSettings;
 
   return (
     <div className="admin-page">

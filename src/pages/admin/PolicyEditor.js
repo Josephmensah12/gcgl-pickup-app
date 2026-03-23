@@ -1,11 +1,20 @@
-import React, { useState } from 'react';
-import { getCompanySettings, saveCompanySettings } from '../../utils/storage';
+import React, { useState, useEffect } from 'react';
+import { getCompanySettings, saveCompanySettings } from '../../utils/api';
 import './Admin.css';
 
 export default function PolicyEditor() {
-  const [settings, setSettings] = useState(getCompanySettings());
+  const [settings, setSettings] = useState(null);
   const [newProhibited, setNewProhibited] = useState('');
   const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getCompanySettings()
+      .then(setSettings)
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading || !settings) return <div className="admin-page"><p>Loading...</p></div>;
 
   const policies = settings.policies;
 
@@ -34,8 +43,8 @@ export default function PolicyEditor() {
     setSaved(false);
   };
 
-  const handleSave = () => {
-    saveCompanySettings(settings);
+  const handleSave = async () => {
+    await saveCompanySettings(settings);
     setSaved(true);
   };
 

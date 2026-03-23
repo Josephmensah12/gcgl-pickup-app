@@ -1,14 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCompanySettings, getInvoices, getShipments, getCatalogItems } from '../../utils/storage';
+import { getCompanySettings, getInvoices, getShipments, getCatalogItems } from '../../utils/api';
 import './Admin.css';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const settings = getCompanySettings();
-  const invoices = getInvoices();
-  const shipments = getShipments();
-  const catalog = getCatalogItems();
+  const [settings, setSettings] = useState(null);
+  const [invoices, setInvoices] = useState([]);
+  const [shipments, setShipments] = useState([]);
+  const [catalog, setCatalog] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([getCompanySettings(), getInvoices(), getShipments(), getCatalogItems()])
+      .then(([s, inv, ship, cat]) => {
+        setSettings(s);
+        setInvoices(inv);
+        setShipments(ship);
+        setCatalog(cat);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading || !settings) return <div className="admin-page"><p>Loading...</p></div>;
 
   const cards = [
     { label: 'Company Settings', icon: '🏢', path: '/admin/settings', sub: settings.companyInfo.name },

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getCustomer, getRecipients } from '../utils/storage';
+import { getCustomer, getRecipients } from '../utils/api';
 import './RecipientSelect.css';
 
 export default function RecipientSelect() {
@@ -8,13 +8,18 @@ export default function RecipientSelect() {
   const navigate = useNavigate();
   const [customer, setCustomer] = useState(null);
   const [recipients, setRecipients] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const c = getCustomer(customerId);
-    setCustomer(c);
-    setRecipients(getRecipients(customerId));
+    Promise.all([getCustomer(customerId), getRecipients(customerId)])
+      .then(([c, r]) => {
+        setCustomer(c);
+        setRecipients(r);
+      })
+      .finally(() => setLoading(false));
   }, [customerId]);
 
+  if (loading) return <div className="page-pad"><p>Loading...</p></div>;
   if (!customer) return <div className="page-pad"><p>Customer not found.</p></div>;
 
   return (

@@ -1,19 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { saveRecipient, getRecipients } from '../utils/storage';
+import { saveRecipient, getRecipients } from '../utils/api';
 import { generateId } from '../utils/helpers';
 import './RecipientForm.css';
 
 export default function RecipientForm() {
   const { customerId } = useParams();
   const navigate = useNavigate();
-  const existingRecipients = getRecipients(customerId);
 
   const [form, setForm] = useState({
     firstName: '', lastName: '', phone: '', city: '', country: 'Ghana', address: '',
   });
-  const [makeDefault, setMakeDefault] = useState(existingRecipients.length === 0);
+  const [makeDefault, setMakeDefault] = useState(false);
   const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getRecipients(customerId)
+      .then((existing) => {
+        setMakeDefault(existing.length === 0);
+      })
+      .finally(() => setLoading(false));
+  }, [customerId]);
 
   const handleChange = (field, value) => {
     setForm((p) => ({ ...p, [field]: value }));
@@ -32,22 +41,29 @@ export default function RecipientForm() {
     return Object.keys(errs).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
-    const recipient = {
-      id: generateId(),
-      firstName: form.firstName.trim(),
-      lastName: form.lastName.trim(),
-      phone: form.phone.trim(),
-      city: form.city.trim(),
-      country: form.country.trim(),
-      address: form.address.trim(),
-      isDefault: makeDefault,
-    };
-    saveRecipient(customerId, recipient);
-    navigate(`/pickup/${customerId}/${recipient.id}`, { replace: true });
+    if (!validate() || submitting) return;
+    setSubmitting(true);
+    try {
+      const recipient = {
+        id: generateId(),
+        firstName: form.firstName.trim(),
+        lastName: form.lastName.trim(),
+        phone: form.phone.trim(),
+        city: form.city.trim(),
+        country: form.country.trim(),
+        address: form.address.trim(),
+        isDefault: makeDefault,
+      };
+      await saveRecipient(customerId, recipient);
+      navigate(`/pickup/${customerId}/${recipient.id}`, { replace: true });
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  if (loading) return <div className="recip-form-page"><p>Loading...</p></div>;
 
   return (
     <div className="recip-form-page">
@@ -96,7 +112,9 @@ export default function RecipientForm() {
           Set as default recipient
         </label>
 
-        <button type="submit" className="submit-btn">Save & Continue</button>
+        <button type="submit" className="submit-btn" disabled={submitting}>
+          {submitting ? 'Saving...' : 'Save & Continue'}
+        </button>
       </form>
     </div>
   );
