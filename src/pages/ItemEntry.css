@@ -60,21 +60,50 @@
 .cat-tag.active { background: #1a56db; color: #fff; border-color: #1a56db; }
 .catalog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .catalog-card {
-  background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-  overflow: hidden; cursor: pointer; display: flex; flex-direction: column;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 .catalog-card:active { background: #f0f4ff; }
-.cat-item-img {
-  width: 100%; height: 100px; object-fit: cover; display: block;
+.cat-item-img-wrap {
+  width: 100%;
+  padding-top: 65%;
+  position: relative;
   background: #f1f5f9;
+  flex-shrink: 0;
+}
+.cat-item-img-wrap img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 .cat-item-placeholder {
-  width: 100%; height: 100px; display: flex; align-items: center; justify-content: center;
-  background: #f1f5f9; font-size: 32px; color: #cbd5e1;
+  width: 100%;
+  padding-top: 65%;
+  position: relative;
+  background: #f1f5f9;
+  flex-shrink: 0;
+}
+.cat-item-placeholder span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 32px;
+  color: #cbd5e1;
 }
 .cat-item-body { padding: 10px 12px; text-align: center; }
 .cat-item-name { font-weight: 600; font-size: 14px; color: #1a1a2e; line-height: 1.2; }
-.cat-item-desc { font-size: 11px; color: #999; margin: 3px 0; }
+.cat-item-desc { font-size: 11px; color: #999; margin: 3px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cat-item-price { font-weight: 700; color: #15803d; font-size: 16px; }
 
 /* Discount */

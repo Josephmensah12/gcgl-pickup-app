@@ -215,9 +215,9 @@ export default function ItemEntry() {
             {filteredCatalog.map((item) => (
               <div key={item.id} className="catalog-card" onClick={() => addCatalogItem(item)}>
                 {item.image ? (
-                  <img src={item.image} alt={item.name} className="cat-item-img" />
+                  <div className="cat-item-img-wrap"><img src={item.image} alt={item.name} /></div>
                 ) : (
-                  <div className="cat-item-placeholder">📦</div>
+                  <div className="cat-item-placeholder"><span>📦</span></div>
                 )}
                 <div className="cat-item-body">
                   <div className="cat-item-name">{item.name}</div>
