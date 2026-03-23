@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getInvoice } from '../utils/storage';
+import { getInvoice, saveInvoice, getCompanySettings } from '../utils/storage';
 import { formatPrice } from '../utils/pricing';
 import { formatDate, formatItemCount, formatInvoiceNumber } from '../utils/helpers';
 import './InvoiceDisplay.css';
@@ -9,98 +9,165 @@ export default function InvoiceDisplay() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [invoice, setInvoice] = useState(null);
+  const [showPayment, setShowPayment] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('cash');
+  const [amountPaid, setAmountPaid] = useState('');
+  const [showEmail, setShowEmail] = useState(false);
+  const [emailMsg, setEmailMsg] = useState('');
+  const settings = getCompanySettings();
 
   useEffect(() => {
-    const inv = getInvoice(id);
-    setInvoice(inv);
+    setInvoice(getInvoice(id));
   }, [id]);
 
-  if (!invoice) {
-    return <div className="invoice-page"><p>Invoice not found.</p></div>;
-  }
+  if (!invoice) return <div className="invoice-page"><p>Invoice not found.</p></div>;
 
-  const itemCountDisplay = formatItemCount(
-    invoice.originalItemCount,
-    invoice.addedItemCount
-  );
+  const displayNum = formatInvoiceNumber(invoice.invoiceNumber, invoice.originalItemCount, invoice.addedItemCount);
+  const itemCountDisplay = formatItemCount(invoice.originalItemCount, invoice.addedItemCount);
+
+  const markPaid = () => {
+    const updated = {
+      ...invoice,
+      paymentStatus: 'paid',
+      paymentMethod,
+      amountPaid: parseFloat(amountPaid) || invoice.finalTotal,
+      paidAt: new Date().toISOString(),
+    };
+    saveInvoice(updated);
+    setInvoice(updated);
+    setShowPayment(false);
+  };
+
+  const markUnpaid = () => {
+    const updated = { ...invoice, paymentStatus: 'unpaid', paymentMethod: null, amountPaid: 0, paidAt: null };
+    saveInvoice(updated);
+    setInvoice(updated);
+  };
+
+  const sendEmail = () => {
+    alert(`Invoice email would be sent to ${invoice.customerEmail}\n\nThis feature will use an email service in Phase 2.`);
+    setShowEmail(false);
+  };
 
   return (
     <div className="invoice-page">
+      {/* Header */}
       <div className="invoice-header-card">
-        <div className="inv-number">Invoice #{formatInvoiceNumber(invoice.invoiceNumber, invoice.originalItemCount, invoice.addedItemCount)}</div>
+        <div className="company-name">{settings.companyInfo.name}</div>
+        <div className="inv-number">Invoice #{displayNum}</div>
         <div className="inv-date">{formatDate(invoice.createdAt)}</div>
-        {invoice.lastEditedAt && (
-          <div className="inv-edited">Edited: {formatDate(invoice.lastEditedAt)}</div>
-        )}
+        {invoice.lastEditedAt && <div className="inv-edited">Edited: {formatDate(invoice.lastEditedAt)}</div>}
+        <span className={'payment-badge-lg ' + invoice.paymentStatus}>{invoice.paymentStatus}</span>
       </div>
 
-      <div className="section">
-        <h3>Customer</h3>
-        <div className="detail-card">
-          <p className="detail-name">{invoice.customerName}</p>
-          <p className="detail-line">{invoice.customerEmail}</p>
-          <p className="detail-line">{invoice.customerPhone}</p>
-          <p className="detail-line">{invoice.customerAddress}</p>
+      {/* Customer & Recipient */}
+      <div className="inv-parties">
+        <div className="party">
+          <h4>From (Sender)</h4>
+          <p className="party-name">{invoice.customerName}</p>
+          <p>{invoice.customerPhone}</p>
+          <p>{invoice.customerEmail}</p>
+          <p>{invoice.customerAddress}</p>
+        </div>
+        <div className="party">
+          <h4>Ship To (Recipient)</h4>
+          <p className="party-name">{invoice.recipientName}</p>
+          <p>{invoice.recipientPhone}</p>
+          <p>{invoice.recipientAddress}</p>
         </div>
       </div>
 
+      {/* Line Items */}
       <div className="section">
         <h3>Line Items</h3>
         {invoice.lineItems.map((item, idx) => (
           <div key={item.id} className="line-item-card">
             <div className="li-top">
               <span className="li-num">#{idx + 1}</span>
-              <span className="li-dims">
-                {item.dimensions.length}×{item.dimensions.width}×{item.dimensions.height}"
-              </span>
+              <span className="li-type">{item.type === 'custom' ? `${item.dimensions.length}×${item.dimensions.width}×${item.dimensions.height}"` : item.catalogName}</span>
               <span className="li-qty">×{item.quantity}</span>
-              <span className="li-price">
-                {formatPrice(item.calculatedPrice * item.quantity)}
-              </span>
+              <span className="li-price">{formatPrice(item.finalPrice * item.quantity)}</span>
             </div>
-            {item.description && (
-              <div className="li-desc">{item.description}</div>
+            {item.discount && (
+              <div className="li-discount">
+                Discount: {item.discount.type === 'percentage' ? `${item.discount.amount}%` : `$${item.discount.amount}`}
+                {' '}(was {formatPrice(item.basePrice)}/ea)
+              </div>
             )}
-            {item.photo && (
-              <img src={item.photo} alt="Item" className="li-photo" />
+            {item.description && <div className="li-desc">{item.description}</div>}
+            {item.photos && item.photos.length > 0 && (
+              <div className="li-photos">{item.photos.map((p, i) => <img key={i} src={p} alt="" className="li-photo" />)}</div>
             )}
           </div>
         ))}
       </div>
 
+      {/* Totals */}
       <div className="invoice-summary">
-        <div className="summary-row">
-          <span>Total Items:</span>
-          <span>{itemCountDisplay}</span>
-        </div>
-        <div className="summary-row total-row">
-          <span>Total:</span>
-          <span>{formatPrice(invoice.total)}</span>
-        </div>
+        <div className="summary-row"><span>Subtotal:</span><span>{formatPrice(invoice.subtotal)}</span></div>
+        {invoice.totalDiscount > 0 && (
+          <div className="summary-row discount"><span>Discounts:</span><span>-{formatPrice(invoice.totalDiscount)}</span></div>
+        )}
+        <div className="summary-row"><span>Total Items:</span><span>{itemCountDisplay}</span></div>
+        <div className="summary-row total-row"><span>Total:</span><span>{formatPrice(invoice.finalTotal)}</span></div>
+        {invoice.paymentStatus === 'paid' && (
+          <div className="summary-row paid-info">
+            <span>Paid ({invoice.paymentMethod}):</span>
+            <span>{formatPrice(invoice.amountPaid)}</span>
+          </div>
+        )}
       </div>
 
+      {/* Payment Section */}
+      {invoice.paymentStatus === 'unpaid' && !showPayment && (
+        <button className="action-btn payment" onClick={() => { setShowPayment(true); setAmountPaid(invoice.finalTotal.toFixed(2)); }}>
+          💳 Mark as Paid
+        </button>
+      )}
+      {showPayment && (
+        <div className="payment-panel">
+          <h4>Record Payment</h4>
+          <div className="pay-row">
+            <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
+              <option value="cash">Cash</option>
+              <option value="zelle">Zelle</option>
+              <option value="square">Square</option>
+              <option value="check">Check</option>
+            </select>
+            <input type="number" inputMode="decimal" placeholder="Amount" value={amountPaid} onChange={(e) => setAmountPaid(e.target.value)} />
+          </div>
+          <div className="pay-actions">
+            <button className="pay-confirm" onClick={markPaid}>Confirm Payment</button>
+            <button className="pay-cancel" onClick={() => setShowPayment(false)}>Cancel</button>
+          </div>
+        </div>
+      )}
+      {invoice.paymentStatus === 'paid' && (
+        <button className="action-btn outline" onClick={markUnpaid}>Undo Payment</button>
+      )}
+
+      {/* Actions */}
       <div className="invoice-actions">
-        <button
-          className="action-btn primary"
-          onClick={() => navigate(`/labels/${invoice.id}`)}
-        >
-          🏷️ Print Labels
-        </button>
-        <button
-          className="action-btn secondary"
-          onClick={() =>
-            navigate(`/items/new?invoiceId=${invoice.id}`)
-          }
-        >
-          + Add More Items
-        </button>
-        <button
-          className="action-btn outline"
-          onClick={() => navigate('/')}
-        >
-          Complete Pickup
-        </button>
+        <button className="action-btn primary" onClick={() => navigate(`/labels/${invoice.id}`)}>🏷️ Print Labels</button>
+        <button className="action-btn email-btn" onClick={() => setShowEmail(true)}>📧 Email Invoice</button>
+        <button className="action-btn secondary" onClick={() => navigate(`/pickup/edit/${invoice.id}`)}>+ Add More Items</button>
+        <button className="action-btn outline" onClick={() => navigate('/')}>Complete Pickup</button>
       </div>
+
+      {/* Email Modal */}
+      {showEmail && (
+        <div className="modal-overlay" onClick={() => setShowEmail(false)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <h3>Email Invoice</h3>
+            <p className="modal-info">To: {invoice.customerEmail}</p>
+            <textarea placeholder="Optional message to customer..." value={emailMsg} onChange={(e) => setEmailMsg(e.target.value)} rows={3} />
+            <div className="modal-actions">
+              <button className="modal-send" onClick={sendEmail}>Send Invoice</button>
+              <button className="modal-cancel" onClick={() => setShowEmail(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

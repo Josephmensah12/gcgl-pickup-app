@@ -1,0 +1,26 @@
+.recip-form-page { padding: 16px; }
+.recip-form-page h2 { font-size: 22px; margin: 0 0 20px; color: #1a1a2e; }
+
+.form-row { display: flex; gap: 12px; }
+.form-row .form-group { flex: 1; }
+
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 14px; font-weight: 600; color: #333; margin-bottom: 6px; }
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px;
+  font-size: 16px; outline: none; box-sizing: border-box;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #1a56db; }
+
+.field-error { color: #ef4444; font-size: 13px; margin-top: 4px; display: block; }
+
+.checkbox-label {
+  display: flex; align-items: center; gap: 8px; font-size: 15px;
+  margin-bottom: 20px; cursor: pointer;
+}
+.checkbox-label input[type="checkbox"] { width: 20px; height: 20px; }
+
+.submit-btn {
+  width: 100%; padding: 16px; background: #1a56db; color: #fff; border: none;
+  border-radius: 10px; font-size: 18px; font-weight: 600; cursor: pointer; min-height: 56px;
+}

@@ -15,7 +15,6 @@ export default function CustomerList() {
   return (
     <div className="customer-list-page">
       <h2>Select Customer</h2>
-
       <input
         className="search-input"
         type="text"
@@ -24,29 +23,21 @@ export default function CustomerList() {
         onChange={(e) => setQuery(e.target.value)}
         autoFocus
       />
-
-      <button
-        className="new-customer-btn"
-        onClick={() => navigate('/customers/new')}
-      >
+      <button className="new-customer-btn" onClick={() => navigate('/customers/new')}>
         + Add New Customer
       </button>
-
       <div className="customer-results">
         {customers.length === 0 && (
-          <p className="no-results">
-            {query ? 'No customers found.' : 'No customers yet. Add one to get started.'}
-          </p>
+          <p className="no-results">{query ? 'No customers found.' : 'No customers yet. Add one to get started.'}</p>
         )}
         {customers.map((c) => (
-          <div
-            key={c.id}
-            className="customer-card"
-            onClick={() => navigate(`/items/new?customerId=${c.id}`)}
-          >
+          <div key={c.id} className="customer-card" onClick={() => navigate(`/customer/${c.id}/recipients`)}>
             <div className="customer-name">{c.fullName}</div>
             <div className="customer-info">{c.phone}</div>
             <div className="customer-info">{c.address}</div>
+            {c.recipients && c.recipients.length > 0 && (
+              <div className="customer-recip-count">{c.recipients.length} recipient(s)</div>
+            )}
           </div>
         ))}
       </div>

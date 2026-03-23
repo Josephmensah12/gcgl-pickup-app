@@ -6,6 +6,7 @@ export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
   const isHome = location.pathname === '/';
+  const isAdmin = location.pathname.startsWith('/admin');
 
   return (
     <header className="app-header">
@@ -19,7 +20,17 @@ export default function Header() {
       <h1 className="header-title" onClick={() => navigate('/')}>
         GCGL Pickup
       </h1>
-      <div className="header-right" />
+      <div className="header-right">
+        {!isAdmin ? (
+          <button className="admin-btn" onClick={() => navigate('/admin')}>
+            ⚙️
+          </button>
+        ) : (
+          <button className="admin-btn" onClick={() => navigate('/')}>
+            🏠
+          </button>
+        )}
+      </div>
     </header>
   );
 }

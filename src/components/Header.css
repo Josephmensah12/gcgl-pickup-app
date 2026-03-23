@@ -19,7 +19,12 @@
 
 .header-left,
 .header-right {
-  width: 70px;
+  width: 60px;
+  display: flex;
+}
+
+.header-right {
+  justify-content: flex-end;
 }
 
 .back-btn {
@@ -29,4 +34,12 @@
   font-size: 16px;
   cursor: pointer;
   padding: 8px 4px;
+}
+
+.admin-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 6px;
 }

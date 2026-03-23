@@ -4,7 +4,13 @@
 }
 
 .app-main {
-  max-width: 480px;
+  max-width: 600px;
   margin: 0 auto;
   padding-bottom: 32px;
+}
+
+@media (min-width: 768px) {
+  .app-main {
+    max-width: 720px;
+  }
 }

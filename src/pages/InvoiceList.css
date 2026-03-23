@@ -1,59 +1,28 @@
-.invoice-list-page {
-  padding: 16px;
-}
+.invoice-list-page { padding: 16px; }
+.invoice-list-page h2 { font-size: 22px; margin: 0 0 12px; color: #1a1a2e; }
 
-.invoice-list-page h2 {
-  font-size: 22px;
-  margin: 0 0 16px;
-  color: #1a1a2e;
+.filter-row { display: flex; gap: 6px; margin-bottom: 16px; }
+.filter-btn {
+  flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px;
+  background: #fff; font-size: 13px; cursor: pointer; text-transform: capitalize; min-height: 40px;
 }
+.filter-btn.active { background: #1a56db; color: #fff; border-color: #1a56db; }
 
-.empty-msg {
-  text-align: center;
-  color: #999;
-  padding: 40px;
-}
+.empty-msg { text-align: center; color: #999; padding: 40px; }
 
 .inv-list-card {
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 14px;
-  margin-bottom: 10px;
-  cursor: pointer;
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 10px;
+  padding: 14px; margin-bottom: 10px; cursor: pointer;
 }
+.inv-list-card:active { background: #f7fafc; }
+.inv-list-top { display: flex; align-items: center; gap: 8px; }
+.inv-list-num { font-weight: 700; color: #1a56db; font-size: 15px; }
+.inv-list-total { font-weight: 700; font-size: 17px; color: #15803d; margin-left: auto; }
+.inv-list-mid { font-size: 14px; color: #333; margin: 4px 0; }
+.inv-list-bot { display: flex; justify-content: space-between; font-size: 12px; color: #999; }
 
-.inv-list-card:active {
-  background: #f7fafc;
+.payment-badge {
+  font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; text-transform: uppercase;
 }
-
-.inv-list-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.inv-list-num {
-  font-weight: 700;
-  color: #1a56db;
-  font-size: 16px;
-}
-
-.inv-list-total {
-  font-weight: 700;
-  font-size: 18px;
-  color: #15803d;
-}
-
-.inv-list-mid {
-  font-size: 15px;
-  color: #333;
-  margin: 4px 0;
-}
-
-.inv-list-bot {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: #999;
-}
+.payment-badge.paid { background: #dcfce7; color: #15803d; }
+.payment-badge.unpaid { background: #fef3c7; color: #b45309; }

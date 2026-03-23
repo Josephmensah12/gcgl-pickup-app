@@ -1,22 +1,26 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getInvoices } from '../utils/storage';
+import { getInvoices, getShipments } from '../utils/storage';
 import { formatInvoiceNumber } from '../utils/helpers';
 import './Home.css';
 
 export default function Home() {
   const navigate = useNavigate();
   const invoices = getInvoices();
+  const shipments = getShipments().filter((s) => s.status === 'collecting');
   const todayStr = new Date().toLocaleDateString();
   const todayInvoices = invoices.filter(
     (inv) => new Date(inv.createdAt).toLocaleDateString() === todayStr
   );
+  const unpaid = invoices.filter((i) => i.paymentStatus === 'unpaid').length;
 
   return (
     <div className="home-page">
       <div className="home-hero">
         <h2>Driver Dashboard</h2>
-        <p className="date-display">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        <p className="date-display">
+          {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+        </p>
       </div>
 
       <div className="home-stats">
@@ -25,8 +29,12 @@ export default function Home() {
           <span className="stat-label">Today's Pickups</span>
         </div>
         <div className="stat-card">
-          <span className="stat-number">{invoices.length}</span>
-          <span className="stat-label">Total Invoices</span>
+          <span className="stat-number">{unpaid}</span>
+          <span className="stat-label">Unpaid</span>
+        </div>
+        <div className="stat-card">
+          <span className="stat-number">{shipments.length}</span>
+          <span className="stat-label">Active Shipments</span>
         </div>
       </div>
 
@@ -45,14 +53,15 @@ export default function Home() {
         <div className="recent-section">
           <h3>Today's Invoices</h3>
           {todayInvoices.map((inv) => (
-            <div
-              key={inv.id}
-              className="invoice-card"
-              onClick={() => navigate(`/invoice/${inv.id}`)}
-            >
+            <div key={inv.id} className="invoice-card" onClick={() => navigate(`/invoice/${inv.id}`)}>
               <div className="invoice-card-header">
-                <span className="invoice-num">#{formatInvoiceNumber(inv.invoiceNumber, inv.originalItemCount, inv.addedItemCount)}</span>
-                <span className="invoice-total">${inv.total.toFixed(2)}</span>
+                <span className="invoice-num">
+                  #{formatInvoiceNumber(inv.invoiceNumber, inv.originalItemCount, inv.addedItemCount)}
+                </span>
+                <span className={'payment-badge ' + inv.paymentStatus}>
+                  {inv.paymentStatus}
+                </span>
+                <span className="invoice-total">${inv.finalTotal.toFixed(2)}</span>
               </div>
               <div className="invoice-card-sub">
                 {inv.customerName} — {inv.lineItems.length} item(s)

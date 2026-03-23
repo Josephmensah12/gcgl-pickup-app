@@ -1,0 +1,124 @@
+.admin-page { padding: 16px; }
+.admin-page h2 { font-size: 22px; margin: 0 0 16px; color: #1a1a2e; }
+
+.admin-stats { display: flex; gap: 10px; margin-bottom: 20px; }
+.admin-stat {
+  flex: 1; background: #f0f4ff; border-radius: 10px; padding: 12px;
+  text-align: center; display: flex; flex-direction: column; font-size: 12px; color: #666;
+}
+.admin-stat-num { font-size: 22px; font-weight: 700; color: #1a56db; }
+
+.admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.admin-card {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+  padding: 16px; cursor: pointer; display: flex; flex-direction: column; gap: 4px;
+}
+.admin-card:active { background: #f0f4ff; }
+.admin-card-icon { font-size: 28px; }
+.admin-card-label { font-weight: 600; font-size: 14px; color: #1a1a2e; }
+.admin-card-sub { font-size: 11px; color: #999; }
+
+/* Forms */
+.admin-form { margin-top: 8px; }
+.admin-form .form-group { margin-bottom: 14px; }
+.admin-form label { display: block; font-size: 14px; font-weight: 600; color: #333; margin-bottom: 6px; }
+.admin-form input, .admin-form select, .admin-form textarea {
+  width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px;
+  font-size: 16px; outline: none; box-sizing: border-box;
+}
+.admin-form input:focus, .admin-form select:focus, .admin-form textarea:focus { border-color: #1a56db; }
+.admin-form textarea { resize: vertical; min-height: 80px; }
+
+.save-btn {
+  width: 100%; padding: 14px; background: #1a56db; color: #fff; border: none;
+  border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; min-height: 48px;
+  margin-top: 8px;
+}
+.save-btn.success { background: #15803d; }
+
+.saved-msg { color: #15803d; font-size: 14px; text-align: center; margin-top: 8px; font-weight: 600; }
+
+/* Cards list */
+.admin-list-card {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 10px;
+  padding: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px;
+}
+.admin-list-card .card-info { flex: 1; }
+.admin-list-card .card-name { font-weight: 600; font-size: 15px; }
+.admin-list-card .card-sub { font-size: 12px; color: #999; }
+.admin-list-card .card-price { font-weight: 700; color: #15803d; font-size: 16px; }
+.admin-list-card .card-actions { display: flex; gap: 6px; }
+
+.icon-btn {
+  width: 36px; height: 36px; border-radius: 8px; border: none; font-size: 16px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.icon-btn.edit { background: #e0e7ff; color: #3730a3; }
+.icon-btn.delete { background: #fee2e2; color: #ef4444; }
+
+.add-btn {
+  width: 100%; padding: 12px; background: #10b981; color: #fff; border: none;
+  border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer;
+  margin-bottom: 16px; min-height: 44px;
+}
+
+/* Toggle group */
+.toggle-group { display: flex; gap: 0; border-radius: 10px; overflow: hidden; border: 2px solid #1a56db; margin-bottom: 16px; }
+.toggle-group button {
+  flex: 1; padding: 10px; border: none; font-size: 14px; font-weight: 600;
+  cursor: pointer; background: #fff; color: #1a56db; min-height: 44px;
+}
+.toggle-group button.active { background: #1a56db; color: #fff; }
+
+/* Capacity bar */
+.capacity-bar { margin-bottom: 16px; }
+.capacity-bar-label { font-size: 13px; color: #666; margin-bottom: 4px; display: flex; justify-content: space-between; }
+.capacity-track { height: 12px; background: #e2e8f0; border-radius: 6px; overflow: hidden; }
+.capacity-fill { height: 100%; border-radius: 6px; transition: width 0.3s; }
+.capacity-fill.green { background: #10b981; }
+.capacity-fill.yellow { background: #f59e0b; }
+.capacity-fill.red { background: #ef4444; }
+
+/* Shipment card */
+.shipment-card {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 10px;
+  padding: 14px; margin-bottom: 10px; cursor: pointer;
+}
+.shipment-header { display: flex; justify-content: space-between; align-items: center; }
+.shipment-name { font-weight: 700; font-size: 15px; color: #1a1a2e; }
+.shipment-status {
+  font-size: 10px; font-weight: 600; padding: 2px 10px; border-radius: 10px; text-transform: uppercase;
+}
+.shipment-status.collecting { background: #dbeafe; color: #1d4ed8; }
+.shipment-status.full { background: #fef3c7; color: #b45309; }
+.shipment-status.shipped { background: #dcfce7; color: #15803d; }
+
+/* Policy chips */
+.chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.chip {
+  display: flex; align-items: center; gap: 6px; padding: 6px 12px;
+  background: #fee2e2; border-radius: 20px; font-size: 13px; color: #991b1b;
+}
+.chip button {
+  background: none; border: none; color: #ef4444; font-size: 16px; cursor: pointer; padding: 0;
+}
+
+/* Payment toggle */
+.payment-method {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 10px;
+  padding: 14px; margin-bottom: 12px;
+}
+.payment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.payment-name { font-weight: 600; font-size: 15px; }
+.toggle-switch {
+  width: 48px; height: 28px; border-radius: 14px; border: none; cursor: pointer;
+  position: relative; transition: background 0.2s;
+}
+.toggle-switch.on { background: #10b981; }
+.toggle-switch.off { background: #d1d5db; }
+.toggle-switch::after {
+  content: ''; position: absolute; top: 3px; width: 22px; height: 22px;
+  border-radius: 50%; background: #fff; transition: left 0.2s;
+}
+.toggle-switch.on::after { left: 23px; }
+.toggle-switch.off::after { left: 3px; }
