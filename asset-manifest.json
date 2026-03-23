@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/gcgl-pickup-app/static/css/main.def1661b.css",
-    "main.js": "/gcgl-pickup-app/static/js/main.38157a50.js",
+    "main.css": "/gcgl-pickup-app/static/css/main.d3458118.css",
+    "main.js": "/gcgl-pickup-app/static/js/main.bcde5500.js",
     "static/js/453.b5ddca96.chunk.js": "/gcgl-pickup-app/static/js/453.b5ddca96.chunk.js",
     "index.html": "/gcgl-pickup-app/index.html",
-    "main.def1661b.css.map": "/gcgl-pickup-app/static/css/main.def1661b.css.map",
-    "main.38157a50.js.map": "/gcgl-pickup-app/static/js/main.38157a50.js.map",
+    "main.d3458118.css.map": "/gcgl-pickup-app/static/css/main.d3458118.css.map",
+    "main.bcde5500.js.map": "/gcgl-pickup-app/static/js/main.bcde5500.js.map",
     "453.b5ddca96.chunk.js.map": "/gcgl-pickup-app/static/js/453.b5ddca96.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.def1661b.css",
-    "static/js/main.38157a50.js"
+    "static/css/main.d3458118.css",
+    "static/js/main.bcde5500.js"
   ]
 }
