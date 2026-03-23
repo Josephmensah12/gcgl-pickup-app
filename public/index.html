@@ -11,6 +11,20 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>GCGL Pickup</title>
+    <script>
+      // Unregister any old service workers that may be caching stale content
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for (var r of registrations) { r.unregister(); }
+        });
+        // Clear all caches
+        if (window.caches) {
+          caches.keys().then(function(names) {
+            for (var name of names) { caches.delete(name); }
+          });
+        }
+      }
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
