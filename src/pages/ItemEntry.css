@@ -60,13 +60,21 @@
 .cat-tag.active { background: #1a56db; color: #fff; border-color: #1a56db; }
 .catalog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .catalog-card {
-  background: #fff; border: 1px solid #e2e8f0; border-radius: 10px;
-  padding: 12px; cursor: pointer; text-align: center;
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+  overflow: hidden; cursor: pointer; display: flex; flex-direction: column;
 }
 .catalog-card:active { background: #f0f4ff; }
-.cat-item-img { width: 100%; height: 64px; object-fit: cover; border-radius: 6px; margin-bottom: 4px; }
-.cat-item-name { font-weight: 600; font-size: 14px; color: #1a1a2e; }
-.cat-item-desc { font-size: 11px; color: #999; margin: 2px 0; }
+.cat-item-img {
+  width: 100%; height: 100px; object-fit: cover; display: block;
+  background: #f1f5f9;
+}
+.cat-item-placeholder {
+  width: 100%; height: 100px; display: flex; align-items: center; justify-content: center;
+  background: #f1f5f9; font-size: 32px; color: #cbd5e1;
+}
+.cat-item-body { padding: 10px 12px; text-align: center; }
+.cat-item-name { font-weight: 600; font-size: 14px; color: #1a1a2e; line-height: 1.2; }
+.cat-item-desc { font-size: 11px; color: #999; margin: 3px 0; }
 .cat-item-price { font-weight: 700; color: #15803d; font-size: 16px; }
 
 /* Discount */
