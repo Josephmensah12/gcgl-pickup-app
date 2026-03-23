@@ -122,3 +122,23 @@
 }
 .toggle-switch.on::after { left: 23px; }
 .toggle-switch.off::after { left: 3px; }
+
+/* Catalog image upload */
+.catalog-image-upload { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.catalog-image-btn {
+  padding: 10px 16px; background: #f3f4f6; border: 2px dashed #cbd5e1;
+  border-radius: 8px; font-size: 14px; cursor: pointer; min-height: 44px;
+}
+.catalog-image-preview { position: relative; width: 80px; height: 80px; }
+.catalog-image-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+.catalog-image-remove {
+  position: absolute; top: -6px; right: -6px; width: 22px; height: 22px;
+  border-radius: 50%; background: #ef4444; color: #fff; border: 2px solid #fff;
+  font-size: 14px; line-height: 1; cursor: pointer; display: flex;
+  align-items: center; justify-content: center; padding: 0;
+}
+.catalog-image-change {
+  background: none; border: none; color: #1a56db; font-size: 13px;
+  cursor: pointer; text-decoration: underline; padding: 4px;
+}
+.card-thumb { width: 44px; height: 44px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }

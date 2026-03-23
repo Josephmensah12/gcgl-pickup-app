@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { getCatalogItems, saveCatalogItem, deleteCatalogItem, getCatalogCategories } from '../../utils/storage';
-import { generateId } from '../../utils/helpers';
+import { generateId, compressImage } from '../../utils/helpers';
 import { formatPrice } from '../../utils/pricing';
 import './Admin.css';
 
@@ -8,21 +8,34 @@ export default function CatalogManager() {
   const [items, setItems] = useState(getCatalogItems());
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState(null);
-  const [form, setForm] = useState({ name: '', description: '', category: '', price: '', active: true });
+  const [form, setForm] = useState({ name: '', description: '', category: '', price: '', active: true, image: null });
   const categories = getCatalogCategories();
+  const fileRef = useRef(null);
 
   const refresh = () => setItems(getCatalogItems());
 
   const openNew = () => {
-    setForm({ name: '', description: '', category: '', price: '', active: true });
+    setForm({ name: '', description: '', category: '', price: '', active: true, image: null });
     setEditing(null);
     setShowForm(true);
   };
 
   const openEdit = (item) => {
-    setForm({ name: item.name, description: item.description, category: item.category, price: String(item.price), active: item.active });
+    setForm({ name: item.name, description: item.description, category: item.category, price: String(item.price), active: item.active, image: item.image || null });
     setEditing(item.id);
     setShowForm(true);
+  };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const compressed = await compressImage(reader.result, 400, 0.7);
+      setForm((p) => ({ ...p, image: compressed }));
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
   };
 
   const handleSave = () => {
@@ -34,6 +47,7 @@ export default function CatalogManager() {
       category: form.category.trim() || 'Uncategorized',
       price: parseFloat(form.price),
       active: form.active,
+      image: form.image || null,
       createdAt: editing ? undefined : new Date().toISOString(),
     };
     saveCatalogItem(item);
@@ -74,6 +88,21 @@ export default function CatalogManager() {
             <label>Price ($)</label>
             <input type="number" inputMode="decimal" value={form.price} onChange={(e) => setForm((p) => ({ ...p, price: e.target.value }))} />
           </div>
+          <div className="form-group">
+            <label>Item Photo</label>
+            <div className="catalog-image-upload">
+              {form.image ? (
+                <div className="catalog-image-preview">
+                  <img src={form.image} alt="Item" />
+                  <button className="catalog-image-remove" onClick={() => setForm((p) => ({ ...p, image: null }))}>×</button>
+                </div>
+              ) : (
+                <button className="catalog-image-btn" onClick={() => fileRef.current.click()}>📷 Upload Photo</button>
+              )}
+              {form.image && <button className="catalog-image-change" onClick={() => fileRef.current.click()}>Change Photo</button>}
+              <input ref={fileRef} type="file" accept="image/*" onChange={handleImageUpload} hidden />
+            </div>
+          </div>
           <label className="checkbox-label" style={{ marginBottom: 12 }}>
             <input type="checkbox" checked={form.active} onChange={(e) => setForm((p) => ({ ...p, active: e.target.checked }))} />
             Active (visible to drivers)
@@ -87,6 +116,7 @@ export default function CatalogManager() {
 
       {items.map((item) => (
         <div key={item.id} className="admin-list-card" style={{ opacity: item.active ? 1 : 0.5 }}>
+          {item.image && <img src={item.image} alt={item.name} className="card-thumb" />}
           <div className="card-info">
             <div className="card-name">{item.name}</div>
             <div className="card-sub">{item.category} — {item.description}</div>
