@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head><title>Clearing cache...</title></head>
+<body>
+<h2>Clearing old cache...</h2>
+<script>
+// Unregister service workers
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function(regs) {
+    regs.forEach(function(r) { r.unregister(); });
+  });
+}
+// Clear all caches
+if (window.caches) {
+  caches.keys().then(function(names) {
+    names.forEach(function(n) { caches.delete(n); });
+  });
+}
+// Clear localStorage of old data format
+localStorage.clear();
+// Redirect to app after short delay
+setTimeout(function() {
+  window.location.href = '/gcgl-pickup-app/#/?t=' + Date.now();
+}, 2000);
+</script>
+<p>Redirecting to app in 2 seconds...</p>
+</body>
+</html>
