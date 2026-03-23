@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getInvoice, saveInvoice, getCompanySettings } from '../utils/storage';
+import { getInvoice, getCompanySettings } from '../utils/storage';
 import { formatPrice } from '../utils/pricing';
 import { formatDate, formatItemCount, formatInvoiceNumber } from '../utils/helpers';
 import './InvoiceDisplay.css';
@@ -9,9 +9,6 @@ export default function InvoiceDisplay() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [invoice, setInvoice] = useState(null);
-  const [showPayment, setShowPayment] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('cash');
-  const [amountPaid, setAmountPaid] = useState('');
   const [showEmail, setShowEmail] = useState(false);
   const [emailMsg, setEmailMsg] = useState('');
   const settings = getCompanySettings();
@@ -24,25 +21,6 @@ export default function InvoiceDisplay() {
 
   const displayNum = formatInvoiceNumber(invoice.invoiceNumber, invoice.originalItemCount, invoice.addedItemCount);
   const itemCountDisplay = formatItemCount(invoice.originalItemCount, invoice.addedItemCount);
-
-  const markPaid = () => {
-    const updated = {
-      ...invoice,
-      paymentStatus: 'paid',
-      paymentMethod,
-      amountPaid: parseFloat(amountPaid) || invoice.finalTotal,
-      paidAt: new Date().toISOString(),
-    };
-    saveInvoice(updated);
-    setInvoice(updated);
-    setShowPayment(false);
-  };
-
-  const markUnpaid = () => {
-    const updated = { ...invoice, paymentStatus: 'unpaid', paymentMethod: null, amountPaid: 0, paidAt: null };
-    saveInvoice(updated);
-    setInvoice(updated);
-  };
 
   const sendEmail = () => {
     alert(`Invoice email would be sent to ${invoice.customerEmail}\n\nThis feature will use an email service in Phase 2.`);
@@ -117,34 +95,6 @@ export default function InvoiceDisplay() {
           </div>
         )}
       </div>
-
-      {/* Payment Section */}
-      {invoice.paymentStatus === 'unpaid' && !showPayment && (
-        <button className="action-btn payment" onClick={() => { setShowPayment(true); setAmountPaid(invoice.finalTotal.toFixed(2)); }}>
-          💳 Mark as Paid
-        </button>
-      )}
-      {showPayment && (
-        <div className="payment-panel">
-          <h4>Record Payment</h4>
-          <div className="pay-row">
-            <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
-              <option value="cash">Cash</option>
-              <option value="zelle">Zelle</option>
-              <option value="square">Square</option>
-              <option value="check">Check</option>
-            </select>
-            <input type="number" inputMode="decimal" placeholder="Amount" value={amountPaid} onChange={(e) => setAmountPaid(e.target.value)} />
-          </div>
-          <div className="pay-actions">
-            <button className="pay-confirm" onClick={markPaid}>Confirm Payment</button>
-            <button className="pay-cancel" onClick={() => setShowPayment(false)}>Cancel</button>
-          </div>
-        </div>
-      )}
-      {invoice.paymentStatus === 'paid' && (
-        <button className="action-btn outline" onClick={markUnpaid}>Undo Payment</button>
-      )}
 
       {/* Actions */}
       <div className="invoice-actions">
