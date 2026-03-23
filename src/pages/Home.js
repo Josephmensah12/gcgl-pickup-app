@@ -21,6 +21,7 @@ export default function Home() {
         <p className="date-display">
           {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
         </p>
+        <p style={{ fontSize: 10, color: '#bbb', marginTop: 4 }}>v2.1</p>
       </div>
 
       <div className="home-stats">
