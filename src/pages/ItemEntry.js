@@ -30,6 +30,8 @@ export default function ItemEntry() {
   const [discount, setDiscount] = useState({ enabled: false, type: 'percentage', amount: '' });
   // Photos
   const [photos, setPhotos] = useState([]);
+  // Toast
+  const [toast, setToast] = useState('');
 
   useEffect(() => {
     const loadData = async () => {
@@ -79,6 +81,11 @@ export default function ItemEntry() {
 
   const runningTotals = calculateInvoiceTotals(lineItems);
 
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(''), 2000);
+  };
+
   const resetForm = () => {
     setCustomForm({ length: '', width: '', height: '', quantity: '1', description: '' });
     setDiscount({ enabled: false, type: 'percentage', amount: '' });
@@ -96,6 +103,7 @@ export default function ItemEntry() {
       photos: [...photos], description: customForm.description.trim() || null,
     };
     setLineItems((prev) => [...prev, item]);
+    showToast('Custom item added');
     resetForm();
   };
 
@@ -109,6 +117,7 @@ export default function ItemEntry() {
       photos: [...photos], description: catItem.description || null,
     };
     setLineItems((prev) => [...prev, item]);
+    showToast(`${catItem.name} added`);
     resetForm();
   };
 
@@ -167,6 +176,7 @@ export default function ItemEntry() {
 
   return (
     <div className="item-entry-page">
+      {toast && <div className="item-toast">{toast}</div>}
       {/* Banner */}
       <div className="pickup-banner">
         <div className="banner-col">
