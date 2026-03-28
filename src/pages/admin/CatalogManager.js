@@ -59,7 +59,7 @@ export default function CatalogManager() {
       image: form.image || null,
       createdAt: editing ? undefined : new Date().toISOString(),
     };
-    await saveCatalogItem(item);
+    await saveCatalogItem(item, !editing);
     await refresh();
     setShowForm(false);
   };

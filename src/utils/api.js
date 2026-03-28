@@ -98,8 +98,8 @@ export async function getCatalogItems() {
   const items = await get('/catalog');
   return items.map((i) => ({ ...i, price: parseFloat(i.price) }));
 }
-export async function saveCatalogItem(item) {
-  if (item._isNew !== false) return post('/catalog', item);
+export async function saveCatalogItem(item, isNew = true) {
+  if (isNew) return post('/catalog', item);
   return put(`/catalog/${item.id}`, item);
 }
 export async function deleteCatalogItem(id) { return del(`/catalog/${id}`); }
