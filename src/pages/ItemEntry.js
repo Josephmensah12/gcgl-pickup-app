@@ -312,10 +312,13 @@ export default function ItemEntry() {
           {lineItems.map((item) => (
             <div key={item.id} className="added-item-card">
               <div className="item-row">
-                <span className="item-type-tag">{item.type === 'custom' ? 'Custom' : item.catalogName}</span>
-                {item.type === 'custom' && <span className="item-dims">{item.dimensions.length}×{item.dimensions.width}×{item.dimensions.height}"</span>}
-                <span className="item-qty">×{item.quantity}</span>
-                <span className="item-price">{formatPrice(item.finalPrice * item.quantity)}</span>
+                <div className="item-details">
+                  <span className="item-name">{item.type === 'custom' ? 'Custom Item' : item.catalogName}</span>
+                  <span className="item-meta">
+                    {item.type === 'custom' && `${item.dimensions.length}×${item.dimensions.width}×${item.dimensions.height}" · `}
+                    Qty: {item.quantity} × {formatPrice(item.finalPrice)} = {formatPrice(item.finalPrice * item.quantity)}
+                  </span>
+                </div>
                 <button className="remove-item-btn" onClick={() => removeItem(item.id)}>×</button>
               </div>
               {item.discount && (
