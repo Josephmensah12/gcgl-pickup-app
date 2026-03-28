@@ -110,13 +110,25 @@ export default function ItemEntry() {
   const addCatalogItem = (catItem) => {
     const base = catItem.price;
     const final = discountObj ? applyDiscount(base, discountObj) : base;
-    const item = {
-      id: generateId(), type: 'fixed', catalogItemId: catItem.id,
-      catalogName: catItem.name, quantity: qty, basePrice: base,
-      discount: discountObj, finalPrice: final,
-      photos: [...photos], description: catItem.description || null,
-    };
-    setLineItems((prev) => [...prev, item]);
+
+    // Check if same catalog item already added with same discount
+    const existingIndex = lineItems.findIndex(
+      (li) => li.catalogItemId === catItem.id && li.finalPrice === final
+    );
+
+    if (existingIndex !== -1) {
+      setLineItems((prev) => prev.map((li, i) =>
+        i === existingIndex ? { ...li, quantity: li.quantity + qty } : li
+      ));
+    } else {
+      const item = {
+        id: generateId(), type: 'fixed', catalogItemId: catItem.id,
+        catalogName: catItem.name, quantity: qty, basePrice: base,
+        discount: discountObj, finalPrice: final,
+        photos: [...photos], description: catItem.description || null,
+      };
+      setLineItems((prev) => [...prev, item]);
+    }
     showToast(`${catItem.name} added`);
     resetForm();
   };
