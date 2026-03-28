@@ -6,8 +6,15 @@ exports.list = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
-  const item = await CatalogItem.create(req.body);
-  res.status(201).json(item);
+  try {
+    const item = await CatalogItem.create(req.body);
+    res.status(201).json(item);
+  } catch (err) {
+    if (err.name === 'SequelizeUniqueConstraintError') {
+      return res.status(409).json({ error: 'Item already exists' });
+    }
+    res.status(500).json({ error: err.message });
+  }
 };
 
 exports.update = async (req, res) => {
