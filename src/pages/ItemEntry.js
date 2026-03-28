@@ -41,7 +41,9 @@ export default function ItemEntry() {
         ]);
         setCatalogItems(catItems.filter((i) => i.active));
         setCategories(cats);
-        setShipments(ships.filter((s) => s.status === 'collecting'));
+        const activeShips = ships.filter((s) => s.status === 'collecting');
+        setShipments(activeShips);
+        if (activeShips.length > 0) setSelectedShipment(activeShips[0].id);
 
         if (invoiceId) {
           const inv = await getInvoice(invoiceId);
