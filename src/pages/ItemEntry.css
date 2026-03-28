@@ -58,7 +58,7 @@
   background: #fff; font-size: 13px; cursor: pointer; min-height: 36px;
 }
 .cat-tag.active { background: #1a56db; color: #fff; border-color: #1a56db; }
-.catalog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.catalog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: start; }
 .catalog-card {
   background: #fff;
   border: 1px solid #e2e8f0;
@@ -72,10 +72,11 @@
 .catalog-card:active { background: #f0f4ff; }
 .cat-item-img-wrap {
   width: 100%;
-  padding-top: 65%;
+  padding-top: 70%;
   position: relative;
   background: #f1f5f9;
   flex-shrink: 0;
+  overflow: hidden;
 }
 .cat-item-img-wrap img {
   position: absolute;
@@ -83,8 +84,10 @@
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
+  padding: 4px;
+  box-sizing: border-box;
 }
 .cat-item-placeholder {
   width: 100%;
@@ -101,10 +104,10 @@
   font-size: 32px;
   color: #cbd5e1;
 }
-.cat-item-body { padding: 10px 12px; text-align: center; }
-.cat-item-name { font-weight: 600; font-size: 14px; color: #1a1a2e; line-height: 1.2; }
+.cat-item-body { padding: 8px 10px; text-align: center; }
+.cat-item-name { font-weight: 600; font-size: 13px; color: #1a1a2e; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .cat-item-desc { font-size: 11px; color: #999; margin: 3px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.cat-item-price { font-weight: 700; color: #15803d; font-size: 16px; }
+.cat-item-price { font-weight: 700; color: #15803d; font-size: 15px; }
 
 /* Discount */
 .checkbox-label {
