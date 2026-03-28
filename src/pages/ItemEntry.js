@@ -116,9 +116,11 @@ export default function ItemEntry() {
       (li) => li.catalogItemId === catItem.id && li.finalPrice === final
     );
 
+    let newTotal = qty;
     if (existingIndex !== -1) {
+      newTotal = lineItems[existingIndex].quantity + qty;
       setLineItems((prev) => prev.map((li, i) =>
-        i === existingIndex ? { ...li, quantity: li.quantity + qty } : li
+        i === existingIndex ? { ...li, quantity: newTotal } : li
       ));
     } else {
       const item = {
@@ -129,7 +131,7 @@ export default function ItemEntry() {
       };
       setLineItems((prev) => [...prev, item]);
     }
-    showToast(`${catItem.name} added`);
+    showToast(`${catItem.name} added (${newTotal} total)`);
     resetForm();
   };
 
