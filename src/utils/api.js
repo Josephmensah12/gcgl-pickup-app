@@ -50,9 +50,9 @@ export async function getInvoice(id) {
   const inv = await get(`/invoices/${id}`);
   return normalizeInvoice(inv);
 }
-export async function saveInvoice(invoice) {
+export async function saveInvoice(invoice, isNew = true) {
   const { id, ...rest } = invoice;
-  if (invoice._isNew !== false) {
+  if (isNew) {
     return post('/invoices', invoice).then(normalizeInvoice);
   }
   return put(`/invoices/${id}`, rest).then(normalizeInvoice);

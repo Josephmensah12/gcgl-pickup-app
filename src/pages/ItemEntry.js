@@ -152,7 +152,7 @@ export default function ItemEntry() {
         originalItemCount: origCount, addedItemCount: (existingInvoice.addedItemCount || 0) + addedCount,
         lastEditedAt: new Date().toISOString(),
       };
-      await saveInvoice(updated);
+      await saveInvoice(updated, false);
       navigate(`/invoice/${existingInvoice.id}`, { replace: true });
     } else {
       const totalCount = lineItems.reduce((s, li) => s + li.quantity, 0);
