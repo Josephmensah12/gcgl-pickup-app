@@ -139,6 +139,11 @@ export default function ItemEntry() {
     setLineItems((prev) => prev.filter((i) => i.id !== id));
   };
 
+  const updateItemQty = (id, newQty) => {
+    const q = Math.max(1, parseInt(newQty) || 1);
+    setLineItems((prev) => prev.map((li) => li.id === id ? { ...li, quantity: q } : li));
+  };
+
   const generateInvoiceHandler = async () => {
     if (lineItems.length === 0) return;
     const totals = calculateInvoiceTotals(lineItems);
@@ -328,10 +333,22 @@ export default function ItemEntry() {
               <div className="item-row">
                 <div className="item-details">
                   <span className="item-name">{item.type === 'custom' ? 'Custom Item' : item.catalogName}</span>
-                  <span className="item-meta">
-                    {item.type === 'custom' && `${item.dimensions.length}×${item.dimensions.width}×${item.dimensions.height}" · `}
-                    Qty: {item.quantity} × {formatPrice(item.finalPrice)} = {formatPrice(item.finalPrice * item.quantity)}
-                  </span>
+                  {item.type === 'custom' && <span className="item-dims-text">{item.dimensions.length}×{item.dimensions.width}×{item.dimensions.height}"</span>}
+                  <div className="item-qty-row">
+                    <div className="qty-stepper">
+                      <button className="qty-btn" onClick={() => updateItemQty(item.id, item.quantity - 1)}>−</button>
+                      <input
+                        type="number"
+                        className="qty-input"
+                        value={item.quantity}
+                        onChange={(e) => updateItemQty(item.id, e.target.value)}
+                        min="1"
+                        inputMode="numeric"
+                      />
+                      <button className="qty-btn" onClick={() => updateItemQty(item.id, item.quantity + 1)}>+</button>
+                    </div>
+                    <span className="item-line-total">× {formatPrice(item.finalPrice)} = {formatPrice(item.finalPrice * item.quantity)}</span>
+                  </div>
                 </div>
                 <button className="remove-item-btn" onClick={() => removeItem(item.id)}>×</button>
               </div>

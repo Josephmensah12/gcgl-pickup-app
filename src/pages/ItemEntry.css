@@ -153,6 +153,26 @@
 .item-details { flex: 1; min-width: 0; }
 .item-name { display: block; font-weight: 600; font-size: 14px; color: #1a1a2e; }
 .item-meta { display: block; font-size: 12px; color: #666; margin-top: 2px; }
+.item-dims-text { display: block; font-size: 12px; color: #888; margin-top: 1px; }
+.item-qty-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.qty-stepper {
+  display: flex; align-items: center; border: 1.5px solid #e2e8f0; border-radius: 8px; overflow: hidden;
+}
+.qty-btn {
+  width: 32px; height: 32px; border: none; background: #f8fafc; color: #1a1a2e;
+  font-size: 18px; font-weight: 600; cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+}
+.qty-btn:active { background: #e2e8f0; }
+.qty-input {
+  width: 40px; height: 32px; border: none; border-left: 1.5px solid #e2e8f0;
+  border-right: 1.5px solid #e2e8f0; text-align: center; font-size: 15px;
+  font-weight: 600; color: #1a1a2e; -moz-appearance: textfield; outline: none;
+  padding: 0;
+}
+.qty-input::-webkit-outer-spin-button,
+.qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.item-line-total { font-size: 13px; color: #15803d; font-weight: 600; }
 .remove-item-btn {
   width: 28px; height: 28px; border-radius: 50%; border: none;
   background: #fee2e2; color: #ef4444; font-size: 16px; cursor: pointer;
