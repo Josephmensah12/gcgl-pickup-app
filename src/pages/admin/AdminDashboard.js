@@ -30,7 +30,7 @@ export default function AdminDashboard() {
     { label: 'Item Catalog', icon: '📦', path: '/admin/catalog', sub: `${catalog.filter((c) => c.active).length} active items` },
     { label: 'Shipment Settings', icon: '🚢', path: '/admin/shipments', sub: `Tracking by ${settings.shipmentSettings.capacityType}` },
     { label: 'Active Shipments', icon: '📊', path: '/admin/shipments/list', sub: `${shipments.filter((s) => s.status === 'collecting').length} collecting` },
-    { label: 'Policies & Terms', icon: '📋', path: '/admin/policies', sub: `${settings.policies.prohibited.length} prohibited items` },
+    { label: 'Policies & Terms', icon: '📋', path: '/admin/policies', sub: `${(settings.policies.prohibited || settings.policies.prohibitedItems || []).length} prohibited items` },
   ];
 
   return (

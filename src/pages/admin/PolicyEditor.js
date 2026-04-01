@@ -10,7 +10,13 @@ export default function PolicyEditor() {
 
   useEffect(() => {
     getCompanySettings()
-      .then(setSettings)
+      .then((s) => {
+        // Normalize: backend may use "prohibitedItems" instead of "prohibited"
+        if (s.policies && !s.policies.prohibited) {
+          s.policies.prohibited = s.policies.prohibitedItems || [];
+        }
+        setSettings(s);
+      })
       .finally(() => setLoading(false));
   }, []);
 
