@@ -1,4 +1,4 @@
-const RATE_PER_CUBIC_INCH = 0.011;
+const RATE_PER_CUBIC_INCH = 0.0105;
 
 export function calculateCustomPrice(length, width, height) {
   const volume = length * width * height;
